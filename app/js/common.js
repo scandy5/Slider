@@ -15,19 +15,39 @@ document.addEventListener('DOMContentLoaded', () => {
 	function getSlider(images, id) {
 
 		let indexOfSlide = 0;
+		let circles = document.querySelectorAll('.nav-btn');
+		const addClass = () => document.getElementsByClassName('nav-btn')[indexOfSlide].classList.add('nav-btn_active');
+
+		function getSiblings(elem) {
+			var siblings = [];
+			var sibling = elem.parentNode.firstChild;
+			for (; sibling; sibling = sibling.nextSibling) {
+				if (sibling.nodeType !== 1 || sibling === elem) continue;
+				siblings.push(sibling);
+			}
+			return siblings;
+		};
+
+		function removingClassFromSiblings() {
+			let siblingButtons = getSiblings([...circles][indexOfSlide]);
+			siblingButtons.forEach((element) => {
+				element.classList.remove('nav-btn_active');
+			}); 
+		}
 
 		const goNSlide = (event) => {
 			indexOfSlide = parseInt(event.target.getAttribute('data-id'), 10);
-			document.getElementsByClassName('nav-btn')[indexOfSlide].classList.add('nav-btn_active');
-				// [...document.querySelectorAll('.nav-btn')].forEach( (elem) => elem.classList.remove('nav-btn_active'))
+			addClass();
+			removingClassFromSiblings();
 			return document.querySelector(id).querySelector('.img').setAttribute('src', images[indexOfSlide])
 		}
 
 		const goPreviousSlide = () => { 
 			if (indexOfSlide <= 0) {
-				indexOfSlide = images.length -1;
+				indexOfSlide = images.length - 1;
 			} else indexOfSlide -= 1
-
+			addClass();
+			removingClassFromSiblings();
 			return document.querySelector(id).querySelector('.img').setAttribute('src', images[indexOfSlide])
 		}
 
@@ -35,12 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (indexOfSlide >= images.length - 1) {
 				indexOfSlide = 0;
 			} else indexOfSlide += 1
-
+			addClass();
+			removingClassFromSiblings();
 			return document.querySelector(id).querySelector('.img').setAttribute('src', images[indexOfSlide])
 		}
+
 		document.querySelector(id).addEventListener('click', (e) => {
 			const target = e.target;
-
 			if (target.matches('.next-slide')) {
 				goNextSlide();
 			}
@@ -51,8 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				goNextSlide();
 			}
 			if (target.matches('.nav-btn')) {
-				goNSlide(e);
-				[...document.querySelectorAll('.nav-btn')].forEach( (elem) => elem.classList.remove('nav-btn_active'))
 				goNSlide(e);
 			}
 		});
